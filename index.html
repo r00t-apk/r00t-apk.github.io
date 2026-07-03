@@ -3,15 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PIXEL JRPG PORTFOLIO ENGINE</title>
+<title>JRPG PORTFOLIO WORLD</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  --pink:#ff4fd8;
-  --pink2:#ffb3ea;
-  --bg:#fff6fb;
+  --accent:#ff4fd8;
 }
 
 *{
@@ -20,58 +18,138 @@
   box-sizing:border-box;
   font-family:"Press Start 2P";
   text-transform:uppercase;
+  image-rendering: pixelated;
 }
 
 body{
-  background:var(--bg);
+  background:#fff6fb;
   overflow:hidden;
 }
 
-/* ================= CINEMATIC INTRO (FIXED FADE) ================= */
+/* ================= GRID WORLD ================= */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size:24px 24px;
+  opacity:0.35;
+  animation:scroll 12s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes scroll{
+  from{transform:translateY(0);}
+  to{transform:translateY(24px);}
+}
+
+/* ================= BOOT SCREEN ================= */
 #intro{
   position:fixed;
   inset:0;
   background:black;
+  color:white;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  color:white;
+  gap:20px;
   z-index:99999;
+
   opacity:1;
-  transition:1.2s ease;
+  transition:opacity 1.4s ease, transform 1.4s ease;
 }
 
-#intro.fade{
+#intro.fadeOut{
   opacity:0;
-  transform:scale(1.05);
+  transform:scale(1.08);
   pointer-events:none;
 }
 
+/* scanlines */
+#intro::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 1px,
+    transparent 3px
+  );
+  animation:scan 2s linear infinite;
+}
+
+@keyframes scan{
+  from{transform:translateY(0);}
+  to{transform:translateY(6px);}
+}
+
 #intro h1{
-  color:var(--pink);
-  font-size:16px;
-  animation:glow 2s infinite alternate;
+  font-size:10px;
+  color:var(--accent);
+  animation:pulse 1.8s infinite alternate;
+  z-index:2;
 }
 
-#intro p{
-  font-size:8px;
-  margin-top:20px;
-  opacity:0.7;
-}
-
-#intro button{
-  margin-top:30px;
-  padding:10px;
-  border:3px solid var(--pink);
-  background:white;
-  cursor:pointer;
-  font-size:8px;
-}
-
-@keyframes glow{
-  from{opacity:0.4; transform:scale(1);}
+@keyframes pulse{
+  from{opacity:0.5; transform:scale(1);}
   to{opacity:1; transform:scale(1.05);}
+}
+
+#bar{
+  width:260px;
+  height:10px;
+  border:2px solid var(--accent);
+  z-index:2;
+}
+
+#fill{
+  height:100%;
+  width:0%;
+  background:var(--accent);
+}
+
+#enterHint{
+  font-size:8px;
+  opacity:0.6;
+  display:none;
+  z-index:2;
+}
+
+/* ================= HUD ================= */
+#hud{
+  position:fixed;
+  top:20px;
+  left:20px;
+  background:white;
+  border:4px solid var(--accent);
+  padding:12px;
+  font-size:8px;
+  box-shadow:6px 6px 0 #000;
+  z-index:999;
+}
+
+/* ================= NAV ================= */
+.nav{
+  position:fixed;
+  right:20px;
+  top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  z-index:999;
+}
+
+.nav div{
+  background:white;
+  border:4px solid var(--accent);
+  padding:12px;
+  font-size:8px;
+  box-shadow:6px 6px 0 #000;
+  cursor:pointer;
 }
 
 /* ================= SCREENS ================= */
@@ -79,8 +157,8 @@ body{
   position:absolute;
   inset:0;
   opacity:0;
-  transform:scale(1.05);
-  transition:0.6s ease;
+  transform:scale(1.03);
+  transition:0.5s;
   pointer-events:none;
 }
 
@@ -90,152 +168,97 @@ body{
   pointer-events:auto;
 }
 
-/* ================= BACKGROUND ================= */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:repeating-linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.03),
-    rgba(0,0,0,0.03) 1px,
-    transparent 3px
-  );
-  opacity:0.2;
-}
-
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255,79,216,0.18), transparent 40%),
-    radial-gradient(circle at 80% 60%, rgba(255,179,234,0.18), transparent 45%);
-  filter:blur(70px);
-  z-index:-1;
-}
-
-/* ================= HUD ================= */
-#hud{
-  position:fixed;
-  top:10px;
-  left:10px;
-  background:white;
-  border:4px solid var(--pink);
-  padding:10px;
-  font-size:8px;
-  box-shadow:6px 6px 0 #000;
-  z-index:999;
-}
-
-/* ================= NAV ================= */
-.nav{
-  position:fixed;
-  right:10px;
-  top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  z-index:999;
-}
-
-.nav div{
-  background:white;
-  border:4px solid var(--pink);
-  padding:10px;
-  font-size:8px;
-  box-shadow:6px 6px 0 #000;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.nav div:hover{
-  transform:translate(-3px,-3px);
-}
-
 /* ================= WORLD ================= */
 .world{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
-  gap:16px;
-  padding:120px 20px;
+  align-items:flex-start;
+  gap:28px;
+  padding:140px 60px;
 }
 
+/* ================= BOX ================= */
 .box{
-  width:240px;
+  width:260px;
   background:white;
-  border:5px solid var(--pink);
-  padding:14px;
-  box-shadow:8px 8px 0 #000;
+  border:5px solid var(--accent);
+  padding:18px;
+  font-size:8px;
+  line-height:1.7;
+  box-shadow:10px 10px 0 #000;
+}
+
+/* ================= QUEST ================= */
+.quest{
   cursor:pointer;
 }
 
-.title{font-size:10px;color:var(--pink);margin-bottom:10px;}
-.text{font-size:8px;line-height:1.6;}
-
-/* ================= CURSOR (RESTORED + UPGRADED) ================= */
-#cursor{
-  position:fixed;
-  width:14px;
-  height:14px;
-  background:var(--pink);
-  border:2px solid #000;
-  pointer-events:none;
-  z-index:9999;
-  box-shadow:0 0 25px var(--pink);
-  transform:translate(-50%,-50%);
+/* ================= BOSS ================= */
+.boss{
+  cursor:pointer;
 }
 
-#cursorGlow{
-  position:fixed;
-  width:30px;
-  height:30px;
-  background:radial-gradient(var(--pink), transparent);
-  pointer-events:none;
-  z-index:9998;
-  filter:blur(2px);
-  transform:translate(-50%,-50%);
+/* HP BAR */
+.hpbar{
+  width:100%;
+  height:12px;
+  border:2px solid black;
+  margin-top:12px;
 }
 
-/* trail */
-.trail{
-  position:fixed;
-  width:8px;
-  height:8px;
-  background:var(--pink2);
-  border:1px solid #000;
-  pointer-events:none;
-  opacity:0.6;
+.hpfill{
+  height:100%;
+  width:100%;
+  background:var(--accent);
+  transition:0.3s;
 }
 
-/* ================= SAVE BUILD UI ================= */
-#buildUI{
+/* ================= SYSTEM ================= */
+#system{
   position:fixed;
-  bottom:60px;
-  left:10px;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:75%;
   background:white;
-  border:4px solid var(--pink);
-  padding:10px;
+  border:4px solid var(--accent);
+  padding:12px;
   font-size:8px;
+  text-align:center;
   box-shadow:6px 6px 0 #000;
   z-index:999;
-  width:180px;
 }
 
-#buildUI input{
-  width:100%;
-  font-size:8px;
-  padding:5px;
-  border:2px solid var(--pink);
+/* ================= PROJECT VIEW ================= */
+#projectView{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:99999;
 }
 
-#buildUI button{
-  margin-top:5px;
-  width:100%;
-  font-size:8px;
-  border:2px solid var(--pink);
+#projectContent{
+  width:65%;
   background:white;
+  border:5px solid var(--accent);
+  padding:24px;
+  font-size:8px;
+  line-height:1.8;
+  box-shadow:10px 10px 0 #000;
+}
+
+#closeBtn{
+  position:absolute;
+  bottom:30px;
+  right:30px;
+  background:white;
+  border:4px solid var(--accent);
+  padding:12px;
+  font-size:8px;
   cursor:pointer;
 }
 </style>
@@ -243,149 +266,207 @@ body::after{
 
 <body>
 
-<!-- ================= INTRO ================= -->
+<!-- ================= BOOT ================= -->
 <div id="intro">
-  <h1>PIXEL JRPG ENGINE</h1>
-  <p>LOADING WORLD...</p>
-  <button onclick="startGame()">PRESS START</button>
+  <h1>BOOTING R00T'S WORLD...</h1>
+
+  <div id="bar"><div id="fill"></div></div>
+
+  <div id="enterHint">PRESS ENTER TO START</div>
 </div>
 
-<div id="cursor"></div>
-<div id="cursorGlow"></div>
+<!-- HUD -->
+<div id="hud">LVL 1 | XP 0 / 100</div>
 
-<div id="hud">LVL 1 | XP 0 | DEFAULT</div>
-
-<!-- BUILD SYSTEM -->
-<div id="buildUI">
-  <div>BUILD PROFILE</div>
-  <input id="buildName" placeholder="name">
-  <button onclick="createBuild()">CREATE / SWITCH</button>
-</div>
-
+<!-- NAV -->
 <div class="nav">
   <div onclick="go('home')">HOME</div>
-  <div onclick="go('projects')">PROJECTS</div>
+  <div onclick="go('projects')">PROJECTS (BOSSES)</div>
   <div onclick="go('skills')">SKILLS</div>
-  <div onclick="go('contact')">CONTACT</div>
 </div>
 
-<!-- SCREENS -->
+<!-- HOME -->
 <div id="home" class="screen active">
   <div class="world">
-    <div class="box" onclick="gainXP('ABOUT')">ABOUT WORLD</div>
+
+    <div class="box quest" onclick="gainXP('Explore World')">
+      QUEST: EXPLORE WORLD
+    </div>
+
+    <div class="box">
+      ABOUT ME:<br><br>
+      Hi, I'm R00T — I am a passionate developer who wants to gain experience in game development and Roblox animation .
+    </div>
+
   </div>
 </div>
 
+<!-- PROJECT BOSSES -->
 <div id="projects" class="screen">
   <div class="world">
-    <div class="box" onclick="gainXP('PROJECT')">PROJECT SLOT 1</div>
-    <div class="box" onclick="gainXP('PROJECT')">PROJECT SLOT 2</div>
+
+    <div class="box boss" onclick="bossHit('b1')">
+      <b>BOSS: VR MOTORBIKE SIM</b>
+      <div class="hpbar"><div class="hpfill" id="b1hp"></div></div>
+    </div>
+
+    <div class="box boss" onclick="bossHit('b2')">
+      <b>BOSS: API TEST SYSTEM</b>
+      <div class="hpbar"><div class="hpfill" id="b2hp"></div></div>
+    </div>
+
   </div>
 </div>
 
+<!-- SKILLS -->
 <div id="skills" class="screen">
   <div class="world">
-    <div class="box" onclick="gainXP('SKILL')">SKILL TREE</div>
+
+    <div class="box quest" onclick="gainXP('Study Skills')">
+      QUEST: STUDY SKILLS
+    </div>
+
+    <div class="box">
+      HTML / CSS / JS / JAVA / C# / PYTHON
+    </div>
+
   </div>
 </div>
 
-<div id="contact" class="screen">
-  <div class="world">
-    <div class="box" onclick="gainXP('CONTACT')">EMAIL</div>
-  </div>
+<!-- SYSTEM -->
+<div id="system">SYSTEM: COMPLETE QUESTS OR DEFEAT BOSSES TO LEVEL UP</div>
+
+<!-- PROJECT VIEW -->
+<div id="projectView">
+  <div id="projectContent"></div>
+  <div id="closeBtn" onclick="closeProject()">CLOSE</div>
 </div>
 
 <script>
 
-/* ================= INTRO FIX ================= */
-function startGame(){
-  document.getElementById("intro").classList.add("fade");
-  setTimeout(()=>{
-    document.getElementById("intro").style.display="none";
-  },1200);
-}
+/* ================= BOOT ================= */
+let fill = document.getElementById("fill");
+let intro = document.getElementById("intro");
+let enterHint = document.getElementById("enterHint");
 
-/* ================= BUILD SYSTEM (NOW EFFECTS EVERYTHING) ================= */
-let builds = JSON.parse(localStorage.getItem("builds") || "{}");
-let current = localStorage.getItem("current") || "default";
+let load = 0;
+let ready = false;
 
-if(!builds[current]){
-  builds[current] = {xp:0};
-}
+let boot = setInterval(()=>{
+  load += 5;
+  fill.style.width = load + "%";
 
-function save(){
-  localStorage.setItem("builds", JSON.stringify(builds));
-  localStorage.setItem("current", current);
-}
+  if(load >= 100){
+    clearInterval(boot);
+    ready = true;
+    enterHint.style.display = "block";
+  }
+},60);
 
-/* ================= HUD ================= */
+document.addEventListener("keydown",(e)=>{
+  if(e.key === "Enter" && ready){
+    intro.classList.add("fadeOut");
+    setTimeout(()=>intro.style.display="none",1400);
+  }
+});
+
+/* ================= XP SYSTEM ================= */
+let xp = 0;
+let level = 1;
+
 function updateHUD(){
-  let xp = builds[current].xp;
-  let lvl = Math.floor(xp/50)+1;
-
+  let need = level * 100;
   document.getElementById("hud").innerText =
-    `LVL ${lvl} | XP ${xp} | ${current}`;
-
-  save();
+    `LVL ${level} | XP ${xp} / ${need}`;
 }
 
-/* ================= XP ================= */
-function gainXP(){
-  builds[current].xp += 10;
+function gainXP(task){
+  xp += 25;
+  document.getElementById("system").innerText =
+    `SYSTEM: ${task} +25 XP`;
+
+  levelCheck();
   updateHUD();
 }
 
-/* ================= BUILD SWITCH ================= */
-function createBuild(){
-  let name = document.getElementById("buildName").value;
-  if(!name) return;
+function levelCheck(){
+  let need = level * 100;
 
-  current = name;
-  if(!builds[name]) builds[name] = {xp:0};
+  if(xp >= need){
+    xp -= need;
+    level++;
+    document.getElementById("system").innerText =
+      `LEVEL UP! YOU ARE NOW LEVEL ${level}`;
+  }
+}
 
-  updateHUD();
+/* ================= BOSSES ================= */
+const bosses = {
+  b1:{
+    hp:100,max:100,xp:60,name:"VR MOTORBIKE SIM",
+    project:{
+      title:"VR Motorbike Simulator",
+      desc:"A VR experience allowing users to simulate riding before real-world riding.",
+      tech:"HTML, C#, JavaScript"
+    }
+  },
+  b2:{
+    hp:120,max:120,xp:80,name:"API TEST SYSTEM",
+    project:{
+      title:"API Testing System",
+      desc:"Automated API testing integrated into CI/CD pipelines.",
+      tech:"JavaScript, Cucumber, Selenium"
+    }
+  }
+};
+
+function bossHit(id){
+  let b = bosses[id];
+
+  if(b.hp <= 0){
+    openProject(b);
+    return;
+  }
+
+  b.hp -= 20;
+  if(b.hp < 0) b.hp = 0;
+
+  document.getElementById(id+"hp").style.width =
+    (b.hp/b.max)*100 + "%";
+
+  if(b.hp === 0){
+    xp += b.xp;
+    levelCheck();
+    updateHUD();
+
+    document.getElementById("system").innerText =
+      `BOSS DEFEATED: ${b.name} → PROJECT UNLOCKED`;
+  } else {
+    document.getElementById("system").innerText =
+      `HIT! -20 HP`;
+  }
+}
+
+/* ================= PROJECT VIEW ================= */
+function openProject(b){
+  document.getElementById("projectView").style.display="flex";
+
+  document.getElementById("projectContent").innerHTML = `
+    <b>${b.project.title}</b><br><br>
+    DESCRIPTION:<br>${b.project.desc}<br><br>
+    TECH:<br>${b.project.tech}
+  `;
+}
+
+function closeProject(){
+  document.getElementById("projectView").style.display="none";
 }
 
 /* ================= NAV ================= */
 function go(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-
-  builds[current].xp += 5;
-  updateHUD();
 }
-
-/* ================= CURSOR (FIXED + RESTORED FEEL) ================= */
-const cursor = document.getElementById("cursor");
-const glow = document.getElementById("cursorGlow");
-
-let mx=0,my=0,cx=0,cy=0;
-
-document.addEventListener("mousemove",(e)=>{
-  mx=e.clientX;
-  my=e.clientY;
-
-  const t=document.createElement("div");
-  t.className="trail";
-  t.style.left=mx+"px";
-  t.style.top=my+"px";
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),200);
-});
-
-function loop(){
-  cx += (mx - cx)*0.18;
-  cy += (my - cy)*0.18;
-
-  cursor.style.left = cx+"px";
-  cursor.style.top = cy+"px";
-
-  glow.style.left = cx+"px";
-  glow.style.top = cy+"px";
-
-  requestAnimationFrame(loop);
-}
-loop();
 
 /* INIT */
 updateHUD();
