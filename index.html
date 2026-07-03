@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIXEL JRPG PORTFOLIO ENGINE</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --pink:#ff4fd8;
+  --pink2:#ffb3ea;
+  --bg:#fff6fb;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Press Start 2P";
+  text-transform:uppercase;
+}
+
+body{
+  background:var(--bg);
+  overflow:hidden;
+}
+
+/* ================= CINEMATIC INTRO (FIXED FADE) ================= */
+#intro{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  z-index:99999;
+  opacity:1;
+  transition:1.2s ease;
+}
+
+#intro.fade{
+  opacity:0;
+  transform:scale(1.05);
+  pointer-events:none;
+}
+
+#intro h1{
+  color:var(--pink);
+  font-size:16px;
+  animation:glow 2s infinite alternate;
+}
+
+#intro p{
+  font-size:8px;
+  margin-top:20px;
+  opacity:0.7;
+}
+
+#intro button{
+  margin-top:30px;
+  padding:10px;
+  border:3px solid var(--pink);
+  background:white;
+  cursor:pointer;
+  font-size:8px;
+}
+
+@keyframes glow{
+  from{opacity:0.4; transform:scale(1);}
+  to{opacity:1; transform:scale(1.05);}
+}
+
+/* ================= SCREENS ================= */
+.screen{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transform:scale(1.05);
+  transition:0.6s ease;
+  pointer-events:none;
+}
+
+.screen.active{
+  opacity:1;
+  transform:scale(1);
+  pointer-events:auto;
+}
+
+/* ================= BACKGROUND ================= */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.03),
+    rgba(0,0,0,0.03) 1px,
+    transparent 3px
+  );
+  opacity:0.2;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,79,216,0.18), transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(255,179,234,0.18), transparent 45%);
+  filter:blur(70px);
+  z-index:-1;
+}
+
+/* ================= HUD ================= */
+#hud{
+  position:fixed;
+  top:10px;
+  left:10px;
+  background:white;
+  border:4px solid var(--pink);
+  padding:10px;
+  font-size:8px;
+  box-shadow:6px 6px 0 #000;
+  z-index:999;
+}
+
+/* ================= NAV ================= */
+.nav{
+  position:fixed;
+  right:10px;
+  top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  z-index:999;
+}
+
+.nav div{
+  background:white;
+  border:4px solid var(--pink);
+  padding:10px;
+  font-size:8px;
+  box-shadow:6px 6px 0 #000;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.nav div:hover{
+  transform:translate(-3px,-3px);
+}
+
+/* ================= WORLD ================= */
+.world{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:16px;
+  padding:120px 20px;
+}
+
+.box{
+  width:240px;
+  background:white;
+  border:5px solid var(--pink);
+  padding:14px;
+  box-shadow:8px 8px 0 #000;
+  cursor:pointer;
+}
+
+.title{font-size:10px;color:var(--pink);margin-bottom:10px;}
+.text{font-size:8px;line-height:1.6;}
+
+/* ================= CURSOR (RESTORED + UPGRADED) ================= */
+#cursor{
+  position:fixed;
+  width:14px;
+  height:14px;
+  background:var(--pink);
+  border:2px solid #000;
+  pointer-events:none;
+  z-index:9999;
+  box-shadow:0 0 25px var(--pink);
+  transform:translate(-50%,-50%);
+}
+
+#cursorGlow{
+  position:fixed;
+  width:30px;
+  height:30px;
+  background:radial-gradient(var(--pink), transparent);
+  pointer-events:none;
+  z-index:9998;
+  filter:blur(2px);
+  transform:translate(-50%,-50%);
+}
+
+/* trail */
+.trail{
+  position:fixed;
+  width:8px;
+  height:8px;
+  background:var(--pink2);
+  border:1px solid #000;
+  pointer-events:none;
+  opacity:0.6;
+}
+
+/* ================= SAVE BUILD UI ================= */
+#buildUI{
+  position:fixed;
+  bottom:60px;
+  left:10px;
+  background:white;
+  border:4px solid var(--pink);
+  padding:10px;
+  font-size:8px;
+  box-shadow:6px 6px 0 #000;
+  z-index:999;
+  width:180px;
+}
+
+#buildUI input{
+  width:100%;
+  font-size:8px;
+  padding:5px;
+  border:2px solid var(--pink);
+}
+
+#buildUI button{
+  margin-top:5px;
+  width:100%;
+  font-size:8px;
+  border:2px solid var(--pink);
+  background:white;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= INTRO ================= -->
+<div id="intro">
+  <h1>PIXEL JRPG ENGINE</h1>
+  <p>LOADING WORLD...</p>
+  <button onclick="startGame()">PRESS START</button>
+</div>
+
+<div id="cursor"></div>
+<div id="cursorGlow"></div>
+
+<div id="hud">LVL 1 | XP 0 | DEFAULT</div>
+
+<!-- BUILD SYSTEM -->
+<div id="buildUI">
+  <div>BUILD PROFILE</div>
+  <input id="buildName" placeholder="name">
+  <button onclick="createBuild()">CREATE / SWITCH</button>
+</div>
+
+<div class="nav">
+  <div onclick="go('home')">HOME</div>
+  <div onclick="go('projects')">PROJECTS</div>
+  <div onclick="go('skills')">SKILLS</div>
+  <div onclick="go('contact')">CONTACT</div>
+</div>
+
+<!-- SCREENS -->
+<div id="home" class="screen active">
+  <div class="world">
+    <div class="box" onclick="gainXP('ABOUT')">ABOUT WORLD</div>
+  </div>
+</div>
+
+<div id="projects" class="screen">
+  <div class="world">
+    <div class="box" onclick="gainXP('PROJECT')">PROJECT SLOT 1</div>
+    <div class="box" onclick="gainXP('PROJECT')">PROJECT SLOT 2</div>
+  </div>
+</div>
+
+<div id="skills" class="screen">
+  <div class="world">
+    <div class="box" onclick="gainXP('SKILL')">SKILL TREE</div>
+  </div>
+</div>
+
+<div id="contact" class="screen">
+  <div class="world">
+    <div class="box" onclick="gainXP('CONTACT')">EMAIL</div>
+  </div>
+</div>
+
+<script>
+
+/* ================= INTRO FIX ================= */
+function startGame(){
+  document.getElementById("intro").classList.add("fade");
+  setTimeout(()=>{
+    document.getElementById("intro").style.display="none";
+  },1200);
+}
+
+/* ================= BUILD SYSTEM (NOW EFFECTS EVERYTHING) ================= */
+let builds = JSON.parse(localStorage.getItem("builds") || "{}");
+let current = localStorage.getItem("current") || "default";
+
+if(!builds[current]){
+  builds[current] = {xp:0};
+}
+
+function save(){
+  localStorage.setItem("builds", JSON.stringify(builds));
+  localStorage.setItem("current", current);
+}
+
+/* ================= HUD ================= */
+function updateHUD(){
+  let xp = builds[current].xp;
+  let lvl = Math.floor(xp/50)+1;
+
+  document.getElementById("hud").innerText =
+    `LVL ${lvl} | XP ${xp} | ${current}`;
+
+  save();
+}
+
+/* ================= XP ================= */
+function gainXP(){
+  builds[current].xp += 10;
+  updateHUD();
+}
+
+/* ================= BUILD SWITCH ================= */
+function createBuild(){
+  let name = document.getElementById("buildName").value;
+  if(!name) return;
+
+  current = name;
+  if(!builds[name]) builds[name] = {xp:0};
+
+  updateHUD();
+}
+
+/* ================= NAV ================= */
+function go(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+
+  builds[current].xp += 5;
+  updateHUD();
+}
+
+/* ================= CURSOR (FIXED + RESTORED FEEL) ================= */
+const cursor = document.getElementById("cursor");
+const glow = document.getElementById("cursorGlow");
+
+let mx=0,my=0,cx=0,cy=0;
+
+document.addEventListener("mousemove",(e)=>{
+  mx=e.clientX;
+  my=e.clientY;
+
+  const t=document.createElement("div");
+  t.className="trail";
+  t.style.left=mx+"px";
+  t.style.top=my+"px";
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),200);
+});
+
+function loop(){
+  cx += (mx - cx)*0.18;
+  cy += (my - cy)*0.18;
+
+  cursor.style.left = cx+"px";
+  cursor.style.top = cy+"px";
+
+  glow.style.left = cx+"px";
+  glow.style.top = cy+"px";
+
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* INIT */
+updateHUD();
+
+</script>
+
+</body>
+</html>
