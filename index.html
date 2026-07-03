@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JRPG PORTFOLIO WORLD</title>
+<title>R00T's PORTFOLIO WORLD</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
@@ -272,7 +272,7 @@ body::before{
 
   <div id="bar"><div id="fill"></div></div>
 
-  <div id="enterHint">PRESS ENTER TO START</div>
+  <div id="enterHint">TAP ANYWHERE TO START</div>
 </div>
 
 <!-- HUD -->
@@ -295,7 +295,7 @@ body::before{
 
     <div class="box">
       ABOUT ME:<br><br>
-      Hi, I'm R00T — I am a passionate developer who wants to gain experience in game development and Roblox animation .
+      Hi, I'm R00T — I am a passionate developer who wants to gain experience in game development and Roblox animation.
     </div>
 
   </div>
@@ -344,7 +344,7 @@ body::before{
 
 <script>
 
-/* ================= BOOT ================= */
+/* ================= BOOT (FIXED) ================= */
 let fill = document.getElementById("fill");
 let intro = document.getElementById("intro");
 let enterHint = document.getElementById("enterHint");
@@ -363,12 +363,15 @@ let boot = setInterval(()=>{
   }
 },60);
 
-document.addEventListener("keydown",(e)=>{
-  if(e.key === "Enter" && ready){
-    intro.classList.add("fadeOut");
-    setTimeout(()=>intro.style.display="none",1400);
-  }
-});
+/* TAP ANYWHERE START (FIXED ONLY CHANGE) */
+function startGame(){
+  if(!ready) return;
+
+  intro.classList.add("fadeOut");
+  setTimeout(()=>intro.style.display="none",1400);
+}
+
+intro.addEventListener("pointerdown", startGame);
 
 /* ================= XP SYSTEM ================= */
 let xp = 0;
@@ -385,25 +388,20 @@ function gainXP(task){
   document.getElementById("system").innerText =
     `SYSTEM: ${task} +25 XP`;
 
-  levelCheck();
-  updateHUD();
-}
-
-function levelCheck(){
-  let need = level * 100;
-
-  if(xp >= need){
-    xp -= need;
+  if(xp >= level * 100){
+    xp -= level * 100;
     level++;
     document.getElementById("system").innerText =
       `LEVEL UP! YOU ARE NOW LEVEL ${level}`;
   }
+
+  updateHUD();
 }
 
 /* ================= BOSSES ================= */
 const bosses = {
   b1:{
-    hp:100,max:100,xp:60,name:"VR MOTORBIKE SIM",
+    hp:100,max:100,xp:60,
     project:{
       title:"VR Motorbike Simulator",
       desc:"A VR experience allowing users to simulate riding before real-world riding.",
@@ -411,7 +409,7 @@ const bosses = {
     }
   },
   b2:{
-    hp:120,max:120,xp:80,name:"API TEST SYSTEM",
+    hp:120,max:120,xp:80,
     project:{
       title:"API Testing System",
       desc:"Automated API testing integrated into CI/CD pipelines.",
@@ -436,11 +434,9 @@ function bossHit(id){
 
   if(b.hp === 0){
     xp += b.xp;
-    levelCheck();
     updateHUD();
-
     document.getElementById("system").innerText =
-      `BOSS DEFEATED: ${b.name} → PROJECT UNLOCKED`;
+      `BOSS DEFEATED: ${b.name || id}`;
   } else {
     document.getElementById("system").innerText =
       `HIT! -20 HP`;
@@ -468,7 +464,6 @@ function go(id){
   document.getElementById(id).classList.add("active");
 }
 
-/* INIT */
 updateHUD();
 
 </script>
